@@ -51,3 +51,23 @@ Output: false
  - s contains only lowercase English letters.
  - p contains only lowercase English letters, '.', and '*'.
  - It is guaranteed for each appearance of the character '*', there will be a previous valid character to match.
+
+
+## Solution
+
+### Approach 1: Recursion
+
+If there were no Kleene stars (the * wildcard character for regular expressions), the problem would be easier - we simply check from left to right if each character of the text matches the pattern.
+
+When a star is present, we may need to check many different suffixes of the text and see if they match the rest of the pattern. A recursive solution is a straightforward way to represent this relationship.
+
+### Approach 2: Dynamic Programming
+
+#### Intuition
+
+As the problem has an optimal substructure, it is natural to cache intermediate results. We ask the question dp(i, j)\text{dp(i, j)}dp(i, j): does text[i:]\text{text[i:]}text[i:] and pattern[j:]\text{pattern[j:]}pattern[j:] match? We can describe our answer in terms of answers to questions involving smaller strings.
+
+#### Algorithm
+
+We proceed with the same recursion as in Approach 1, except because calls will only ever be made to match(text[i:], pattern[j:]), we use dp(i, j)\text{dp(i, j)}dp(i, j) to handle those calls instead, saving us expensive string-building operations and allowing us to cache the intermediate results.
+

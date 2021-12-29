@@ -1,71 +1,51 @@
 package leetcode
 
 func isMatch(s string, p string) bool {
+	return isMatch2(s, p)
+}
+
+// Approach 1: Recursion
+func isMatch1(s string, p string) bool {
 	if p == "" {
 		return s == p
 	}
 
-	if p == ".*" {
-		return true
+	firstMatch := (s != "" && (p[0] == s[0] || p[0] == '.'))
+
+	if len(p) > 1 && p[1] == '*' {
+		if isMatch1(s, p[2:]) {
+			return true
+		}
+
+		if firstMatch && isMatch1(s[1:], p) {
+			return true
+		}
+
+		return false
 	}
 
-	return deepMatch(p, s)
+	return firstMatch && isMatch1(s[1:], p[1:])
 }
 
-func deepMatch(p, s string) bool {
-	for len(p) > 0 {
-		pc := p[0]
-		pn := byte(0)
-		if len(p) > 1 {
-			pn = p[1]
-		}
-
-		if pn == '*' {
-			if pc == '.' {
-				if deepMatch(p[2:], s) {
-					return true
-				}
-
-				if len(s) > 0 {
-					return deepMatch(p, s[1:])
-				}
-				return false
-			}
-
-			// skip pc
-			s2 := s
-			for s2 != "" {
-				if pc == s2[0] {
-					s2 = s2[1:]
-					if deepMatch(p, s2) {
-						return true
-					}
-				}
-				break
-			}
-
-			p = p[2:]
-			continue
-		}
-
-		if pc == '.' {
-			if len(s) == 0 {
-				return false
-			}
-			s = s[1:]
-			p = p[1:]
-			continue
-		}
-
-		if len(s) == 0 {
-			return false
-		}
-		sc := s[0]
-		if sc != pc {
-			return false
-		}
-		s = s[1:]
-		p = p[1:]
+// Approach 2: Dynamic Programming
+func isMatch2(s string, p string) bool {
+	dp := make([][]bool, len(s)+1)
+	for i := 0; i < len(dp); i++ {
+		dp[i] = make([]bool, len(p)+1)
 	}
-	return len(s) == 0 && len(p) == 0
+	dp[len(s)][len(p)] = true
+
+	for i := len(s); i >= 0; i-- {
+		for j := len(p) - 1; j >= 0; j-- {
+			firstMatch := (i < len(s) && (p[j] == s[i] || p[j] == '.'))
+
+			if j+1 < len(p) && p[j+1] == '*' {
+				dp[i][j] = dp[i][j+2] || firstMatch && dp[i+1][j]
+			} else {
+				dp[i][j] = firstMatch && dp[i+1][j+1]
+			}
+		}
+	}
+
+	return dp[0][0]
 }

@@ -27,6 +27,11 @@ func Test_Problem10(t *testing.T) {
 	qs := []question10{
 
 		{
+			para10{"ab", ".*c"},
+			ans10{false},
+		},
+
+		{
 			para10{"aa", "a"},
 			ans10{false},
 		},
